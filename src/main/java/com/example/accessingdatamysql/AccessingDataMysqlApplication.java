@@ -1,12 +1,12 @@
-package com.xml.sign;
+package com.example.accessingdatamysql;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class XmlSignApplication {
+public class AccessingDataMysqlApplication {
+
 	public static void main(String[] args) {
-		SpringApplication.run(XmlSignApplication.class, args);
-		//System.out.println("Hello, World");
+		SpringApplication.run(AccessingDataMysqlApplication.class, args);
 	}
 }
