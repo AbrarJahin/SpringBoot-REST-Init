@@ -1,4 +1,4 @@
-package com.example.accessingdatamysql;
+package com.example.xml.user;
 
 import org.springframework.data.repository.CrudRepository;
 
