@@ -1,25 +1,11 @@
 package com.example.xml.xml_sign;
 
+import com.example.xml.BaseEntityAudit;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
 @Entity // This tells Hibernate to make a table out of this class
-public class XmlSign  {     //extends BaseEntityAudit
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+public class XmlSign extends BaseEntityAudit {
 
     @Column(unique=true, length=256)
     private String token;
