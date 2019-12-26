@@ -1,10 +1,9 @@
 package com.example.xml;
 
 import org.apache.commons.codec.digest.DigestUtils;
-
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.UUID;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -26,14 +25,15 @@ public abstract class BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id", nullable = false, updatable = false, columnDefinition = "BIGINT UNSIGNED")
-    protected Long id;
+    @Column(name = "id", nullable = false, updatable = false, columnDefinition = "BIGINT UNSIGNED", unique=true)
+    //@Unsigned
+    protected BigInteger id;
 
     @Column(name = "version")
     @Version
     private Long version;
 
-    public Long getId() {
+    public BigInteger getId() {
         return id;
     }
 

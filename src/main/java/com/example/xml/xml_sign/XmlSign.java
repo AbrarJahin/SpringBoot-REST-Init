@@ -12,9 +12,6 @@ public class XmlSign extends BaseEntityAudit {
     @Column(name="file_name", columnDefinition = "varchar(1000) DEFAULT 'not_set'", insertable=true, updatable = false)
     private String fileName;
 
-    @Column(name="physical_file_location", columnDefinition = "varchar(1000) DEFAULT 'not_set'", insertable=true, updatable = false)
-    private String fileLocationInServer;
-
     @Column(name="signer_certificate_chain", columnDefinition = "TEXT", insertable=true, updatable = false)
     private String fileSignerCertificateChain;
 
@@ -54,14 +51,6 @@ public class XmlSign extends BaseEntityAudit {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
-    }
-
-    public String getFileLocationInServer() {
-        return fileLocationInServer;
-    }
-
-    public void setFileLocationInServer(String fileLocationInServer) {
-        this.fileLocationInServer = fileLocationInServer;
     }
 
     public String getFileSignerCertificateChain() {
