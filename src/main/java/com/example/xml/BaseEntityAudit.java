@@ -22,17 +22,27 @@ public abstract class BaseEntityAudit extends BaseEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    @Size(max = 20)
-    @Column(name = "created_by", length = 20)
-    private String createdBy;
-
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
+    /*
+    @Size(max = 20)
+    @Column(name = "created_by", length = 20)
+    private String createdBy;
+
     @Size(max = 20)
     @Column(name = "updated_by", length = 20)
     private String updatedBy;
+
+    @Size(max = 20)
+    @Column(name = "created_ip", length = 50)
+    private String createdIP;
+
+    @Size(max = 20)
+    @Column(name = "updated_ip", length = 50)
+    private String updatedIP;
+    */
 
     public Date getCreatedAt() {
         return createdAt;
@@ -42,28 +52,12 @@ public abstract class BaseEntityAudit extends BaseEntity {
         this.createdAt = createdAt;
     }
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
     public Date getUpdatedAt() {
         return updatedAt;
     }
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
     }
 
     /**

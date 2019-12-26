@@ -18,14 +18,13 @@ public class XmlSignController {
 
     @PostMapping(path = "/add") // Map ONLY POST Requests
     public @ResponseBody
-    XmlSign addNewXmlSign(@RequestParam String token
-            , @RequestParam String unsigned_digest) {
+    XmlSign addNewXmlSign(@RequestParam String file_name
+            ,@RequestParam String certificate_chain) {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
-
         XmlSign xmlSign = new XmlSign();
-        xmlSign.setToken(token);
-        xmlSign.setXmlDigest(unsigned_digest);
+        xmlSign.setFileName(file_name);
+        xmlSign.setFileSignerCertificateChain(certificate_chain);
         xmlSignRepository.save(xmlSign);
         return xmlSign;
     }

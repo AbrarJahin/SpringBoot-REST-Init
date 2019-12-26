@@ -1,6 +1,9 @@
 package com.example.xml;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.io.Serializable;
+import java.util.UUID;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -21,7 +24,7 @@ public abstract class BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)     //GenerationType.IDENTITY,GenerationType.SEQUENCE
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id", nullable = false, updatable = false, columnDefinition = "BIGINT UNSIGNED")
     protected Long id;
@@ -65,5 +68,12 @@ public abstract class BaseEntity implements Serializable {
     @Override
     public String toString() {
         return this.getClass().getName() + " [ID=" + id + "]";
+    }
+
+    public String randomSalt() {
+        String ts = String.valueOf(System.currentTimeMillis());
+        String rand = UUID.randomUUID().toString();
+        //return DigestUtils.sha1Hex(ts + rand);
+        return DigestUtils.sha256Hex(ts) + DigestUtils.sha256Hex(rand);
     }
 }

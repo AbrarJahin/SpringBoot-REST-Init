@@ -6,8 +6,7 @@ import javax.persistence.Entity;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class XmlSign extends BaseEntityAudit {
-
-    @Column(unique=true, length=256, updatable = false)
+    @Column(unique=true, length=128, updatable = false)
     private String token;
 
     @Column(name="file_name", columnDefinition = "varchar(1000) DEFAULT 'not_set'", insertable=true, updatable = false)
@@ -16,40 +15,37 @@ public class XmlSign extends BaseEntityAudit {
     @Column(name="physical_file_location", columnDefinition = "varchar(1000) DEFAULT 'not_set'", insertable=true, updatable = false)
     private String fileLocationInServer;
 
-    @Column(name="signer_name", columnDefinition = "varchar(255) DEFAULT 'not_set'", insertable=true, updatable = false)
-    private String fileSignerName;
-
-    @Column(name="signature", columnDefinition = "TEXT", insertable=true, updatable = false)
-    private String fileSignerSignature;
+    @Column(name="signer_certificate_chain", columnDefinition = "TEXT", insertable=true, updatable = false)
+    private String fileSignerCertificateChain;
 
     @Column(name="xml_digest", columnDefinition = "TEXT")
-    private String xmlDigest;
+    private String xmlUnsignedDigest;
 
     @Column(name="signed_xml_digest", columnDefinition = "TEXT")
-    private String signedXMLDigest;
+    private String xmlSignedDigest;
 
-    public String getSignedXMLDigest() {
-        return signedXMLDigest;
+    public XmlSign() {
+        token = randomSalt();
     }
 
-    public void setSignedXMLDigest(String signedXMLDigest) {
-        this.signedXMLDigest = signedXMLDigest;
+    public String getXmlSignedDigest() {
+        return xmlSignedDigest;
     }
 
-    public String getXmlDigest() {
-        return xmlDigest;
+    public void setXmlSignedDigest(String xmlSignedDigest) {
+        this.xmlSignedDigest = xmlSignedDigest;
     }
 
-    public void setXmlDigest(String xmlDigest) {
-        this.xmlDigest = xmlDigest;
+    public String getXmlUnsignedDigest() {
+        return xmlUnsignedDigest;
+    }
+
+    public void setXmlUnsignedDigest(String xmlUnsignedDigest) {
+        this.xmlUnsignedDigest = xmlUnsignedDigest;
     }
 
     public String getToken() {
         return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public String getFileName() {
@@ -68,19 +64,11 @@ public class XmlSign extends BaseEntityAudit {
         this.fileLocationInServer = fileLocationInServer;
     }
 
-    public String getFileSignerName() {
-        return fileSignerName;
+    public String getFileSignerCertificateChain() {
+        return fileSignerCertificateChain;
     }
 
-    public void setFileSignerName(String fileSignerName) {
-        this.fileSignerName = fileSignerName;
-    }
-
-    public String getFileSignerSignature() {
-        return fileSignerSignature;
-    }
-
-    public void setFileSignerSignature(String fileSignerSignature) {
-        this.fileSignerSignature = fileSignerSignature;
+    public void setFileSignerCertificateChain(String fileSignerCertificateChain) {
+        this.fileSignerCertificateChain = fileSignerCertificateChain;
     }
 }
