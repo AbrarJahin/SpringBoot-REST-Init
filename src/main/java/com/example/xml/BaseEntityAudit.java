@@ -20,6 +20,7 @@ public abstract class BaseEntityAudit extends BaseEntity {
 
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
+    //@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="Europe/Zagreb")
     private Date createdAt;
 
     @Column(name = "updated_at")
