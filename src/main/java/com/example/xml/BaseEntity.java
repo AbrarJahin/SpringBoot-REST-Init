@@ -70,10 +70,18 @@ public abstract class BaseEntity implements Serializable {
         return this.getClass().getName() + " [ID=" + id + "]";
     }
 
-    public String randomSalt() {
+    public String randomSalt() {    //String Length = 128
         String ts = String.valueOf(System.currentTimeMillis());
         String rand = UUID.randomUUID().toString();
         //return DigestUtils.sha1Hex(ts + rand);
         return DigestUtils.sha256Hex(ts) + DigestUtils.sha256Hex(rand);
+    }
+
+    public String randomSalt(int length) {
+        if(length>128) {
+            return randomSalt();
+        } else {
+            return randomSalt().substring(0, length);
+        }
     }
 }
