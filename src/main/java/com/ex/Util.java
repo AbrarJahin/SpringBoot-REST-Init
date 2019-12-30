@@ -8,8 +8,10 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.encoders.Hex;
 
 import com.google.gson.Gson;
@@ -31,11 +33,13 @@ public class Util {
 //	}
 	
 	private static Certificate[] getX509CertsFromJsonString(String  certsJson) throws CertificateException {
-    	Type listType = new TypeToken<List<String>>() {}.getType();
-    	Gson gson = new GsonBuilder().create();
-    	List<String> certs = gson.fromJson(certsJson, listType );
-    	
-    	Certificate[] chain= new Certificate[certs.size()];
+    	//Type listType = new TypeToken<List<String>>() {}.getType();
+    	//Gson gson = new GsonBuilder().create();
+    	//List<String> certs = gson.fromJson(certsJson, listType );
+
+		List<String> certs = Arrays.asList(certsJson.trim().split(","));
+
+		Certificate[] chain= new Certificate[certs.size()];
     	int i=0;
     	CertificateFactory cf=CertificateFactory
 		     .getInstance("X509");
