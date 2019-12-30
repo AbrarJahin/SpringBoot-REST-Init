@@ -35,7 +35,6 @@ public class XmlFileController {
         if (!file.isEmpty()) {
             try {
                 xmlFile.setFileName(file.getOriginalFilename(), Integer.parseInt(env.getProperty("file.upload-file-name-max-length-on-os").trim()));
-
                 // read and write the file to the selected location-
                 byte[] bytes = file.getBytes();
                 Path path = Paths.get(env.getProperty("file.upload-dir") + xmlFile.getFileName());
