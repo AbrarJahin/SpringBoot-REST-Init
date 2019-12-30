@@ -40,7 +40,7 @@ public class XmlFileController {
                 byte[] bytes = file.getBytes();
                 Path path = Paths.get(env.getProperty("file.upload-dir") + xmlFile.getFileName());
                 Files.write(path, bytes);
-                xmlFile.setFileLocationInServer(env.getProperty("file.upload-dir") + xmlFile.getFileName());
+                xmlFile.setFileLocationInServer(path.toString());
                 xmlFile.setFileHash(file.hashCode());
                 xmlFile.setFileType(file.getContentType());
             } catch (IOException e) {
