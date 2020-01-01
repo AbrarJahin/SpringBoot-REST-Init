@@ -55,7 +55,7 @@ public class SignService {
     private void signXML(File file) throws IOException, CertificateException {
     	  keyStoreService = new KeyStoreService();
     	  DSSPrivateKeyEntry privateKey= keyStoreService.getPrivateKey() ;
-        DSSDocument toSignDocument = new FileDocument(file);
+    	  DSSDocument toSignDocument = new FileDocument(file);
         
         /* client should send the certificateChain as Json... suppose the string is certsJson
           String  certsJson= "";
@@ -107,7 +107,7 @@ public class SignService {
        // SignatureValue signatureValue = keyStoreService.getSigningToken().sign(dataToSign, digestAlgorithm, privateKey);
        // FileUtils.writeByteArrayToFile(new File("D:\\CA materials\\keystore-demo\\big_inter_signed_real.xml"), signatureValue.getValue()) ;
 
-        System.in.read(); 
+        System.in.read();
       byte[] bytes=  FileUtils.readFileToByteArray(new File(SIGN_VALUE_PATH)) ;
         SignatureValue signatureValueNew = new SignatureValue(SignatureAlgorithm.RSA_SHA256, bytes);
   

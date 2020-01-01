@@ -3,6 +3,8 @@ package com.example.xml.xml_sign;
 import com.ex.Util;
 import com.example.xml.xml_file.XmlFile;
 import com.example.xml.xml_file.XmlFileRepository;
+import com.service.GlobalVariableService;
+import com.service.SignState;
 import eu.europa.esig.dss.*;
 import eu.europa.esig.dss.client.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
@@ -10,16 +12,20 @@ import eu.europa.esig.dss.x509.CertificateToken;
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
 import eu.europa.esig.dss.xades.signature.XAdESService;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.cert.CertificateException;
-import java.util.Optional;
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path = "/xml") // This means URL's start with /demo (after Application path)
@@ -87,6 +93,8 @@ public class XmlSignController {
         //SERVER SIDE.
         // Get the SignedInfo XML segment that need to be signed.
         ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
+        SignState signState = new SignState(parameters, service);
+        GlobalVariableService.putStateByUid(xmlSign.getToken(),signState);
 
         try {
             FileUtils.writeByteArrayToFile(new File(xmlFile.getFileLocationInServer()+".dig"), dataToSign.getBytes()) ;
@@ -102,7 +110,7 @@ public class XmlSignController {
 
     @PostMapping(path = "/get") // Map ONLY POST Requests
     public @ResponseBody    //Optional<XmlSign>
-    XmlSign getXmlSignByToken(@RequestParam String token, @RequestParam String signed_digest) {
+    XmlSign getXmlSignByToken(@RequestParam String token, @RequestParam String signed_digest) throws CertificateException, IOException {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
 
@@ -111,8 +119,55 @@ public class XmlSignController {
             return null;
         }
         xmlSign.setXmlSignedDigest(signed_digest);
+        String xmlFileServerLocation = xmlFileRepository.findByFileName(xmlSign.getFileName()).getFileLocationInServer();
+        File file = new File(xmlFileServerLocation);
         //Append////////////////////////////////////////////////////////////
+        DSSDocument toSignDocument = new FileDocument(file);
 
+        /* client should send the certificateChain as Json... suppose the string is certsJson
+          String  certsJson= "";
+          // call the util method to convert the certsJson string to CertificateTokens
+          CertificateToken[] certificateChain=Util.getCertificateTokensFromJsonString(certsJson);
+          */
+        SignState signState = GlobalVariableService.getStateByUid(token);
+
+        XAdESSignatureParameters parameters = signState.xAdESSignatureParameters;
+
+        /* use the certificate chain that we obtained from the client and use the first element of the chain as signing certificate
+        parameters.setCertificateChain(certificateChain);
+        parameters.setSigningCertificate(certificateChain[0]);
+        */
+        // For LT-level signatures, we would need a TrustedListCertificateVerifier, but for level T,
+        // a CommonCertificateVerifier is enough. (CookBook v 2.2 pg 28)
+        CommonCertificateVerifier commonCertificateVerifier = new CommonCertificateVerifier();
+        XAdESService service = signState.xAdESService;
+
+
+        //SERVER SIDE.
+        // Get the SignedInfo XML segment that need to be signed.
+       // ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
+        //FileUtils.writeByteArrayToFile(new File(DIGEST_PATH), dataToSign.getBytes()) ;
+        // send the bytes value of dataToSign to the client
+
+        DigestAlgorithm digestAlgorithm = parameters.getDigestAlgorithm();
+
+        //CLIENT SIDE
+        // This function obtains the signature value for signed information using the
+        // private key and specified algorithm
+        // replace the following with a client call that sends the bytes value of dataToSign and gets back the signed value
+
+        // SignatureValue signatureValue = keyStoreService.getSigningToken().sign(dataToSign, digestAlgorithm, privateKey);
+        // FileUtils.writeByteArrayToFile(new File("D:\\CA materials\\keystore-demo\\big_inter_signed_real.xml"), signatureValue.getValue()) ;
+
+        //byte[] bytes = signed_digest.getBytes(Charset.forName("UTF-8"));
+        byte[] bytes=  FileUtils.readFileToByteArray(new File("E:\\XML\\keystore-demo\\big_inter_signed.xml")) ;
+        SignatureValue signatureValueNew = new SignatureValue(SignatureAlgorithm.RSA_SHA256, bytes);
+
+        // SERVER SIDE
+        // We invoke the service to sign the document with the signature value obtained in
+        // the previous step.
+        DSSDocument signedDocument = service.signDocument(toSignDocument, parameters, signatureValueNew);
+        signedDocument.save(xmlFileServerLocation + ".sig");
         ////////////////////////////////////////////////////////////////////
         return xmlSign;
     }
