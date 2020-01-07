@@ -31,6 +31,7 @@ public class XmlSignController {
     @Autowired
     private XmlFileRepository xmlFileRepository;
 
+    //////    1st Rest Call From Client     //////////////////////////////////////////////////////////
     @PostMapping(path = "/add") // Map ONLY POST Requests
     public @ResponseBody
     XmlSign addNewXmlSign(@RequestParam String file_name
@@ -49,13 +50,6 @@ public class XmlSignController {
         CertificateToken[] certificateTokens = Util.getCertificateTokensFromJsonString(certificate_chain);
 
         DSSDocument toSignDocument = new FileDocument(file);
-
-        /* client should send the certificateChain as Json... suppose the string is certsJson
-          String  certsJson= "";
-          // call the util method to convert the certsJson string to CertificateTokens
-          CertificateToken[] certificateChain=Util.getCertificateTokensFromJsonString(certsJson);
-          */
-
         XAdESSignatureParameters parameters = new XAdESSignatureParameters ();
 
         parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_T);
@@ -67,12 +61,6 @@ public class XmlSignController {
         parameters.setSigningCertificate(certificateTokens[0]);
         parameters.setCertificateChain(certificateTokens);
 
-        /* use the certificate chain that we obtained from the client and use the first element of the chain as signing certificate
-        parameters.setCertificateChain(certificateChain);
-        parameters.setSigningCertificate(certificateChain[0]);
-        */
-
-
         // For LT-level signatures, we would need a TrustedListCertificateVerifier, but for level T,
         // a CommonCertificateVerifier is enough. (CookBook v 2.2 pg 28)
         CommonCertificateVerifier commonCertificateVerifier = new CommonCertificateVerifier();
@@ -83,33 +71,28 @@ public class XmlSignController {
         OnlineTSPSource tspSource = new OnlineTSPSource("http://tsa.belgium.be/connect");
         service.setTspSource(tspSource);
 
-
-        //SERVER SIDE.
         // Get the SignedInfo XML segment that need to be signed.
         ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
         SignState signState = new SignState(parameters, service);
         GlobalVariableService.putStateByUid(xmlSign.getToken(),signState);
         xmlSign.setXmlUnsignedDigest(new String(dataToSign.getBytes(), "UTF-8"));
-        //////////////////////////////////////////
         xmlSignRepository.save(xmlSign);
         return xmlSign;
     }
 
+    //////    2nd Rest Call From Client     //////////////////////////////////////////////////////////
     @PostMapping(path = "/get") // Map ONLY POST Requests
     public @ResponseBody    //Optional<XmlSign>
     XmlSign getXmlSignByToken(@RequestParam String token, @RequestParam String signed_digest) throws CertificateException, IOException {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
-
         XmlSign xmlSign =  xmlSignRepository.findByToken(token);
-        if(xmlSign==null) {
+        if(xmlSign == null) {
             return null;
         }
-
         xmlSign.setXmlSignedDigest(signed_digest);
         String xmlFileServerLocation = xmlFileRepository.findByFileName(xmlSign.getFileName()).getFileLocationInServer();
         File file = new File(xmlFileServerLocation);
-        //Append////////////////////////////////////////////////////////////
         DSSDocument toSignDocument = new FileDocument(file);
 
         /* client should send the certificateChain as Json... suppose the string is certsJson */
@@ -133,14 +116,12 @@ public class XmlSignController {
 
         signedDocument.save(xmlFileServerLocation + ".sig");
         xmlSignRepository.save(xmlSign);
-        ////////////////////////////////////////////////////////////////////
         return xmlSign;
     }
 
     @GetMapping(path = "/all")
     public @ResponseBody
     Iterable<XmlSign> getAllUsers() {
-        // This returns a JSON or XML with the users
         return xmlSignRepository.findAll();
     }
 }
