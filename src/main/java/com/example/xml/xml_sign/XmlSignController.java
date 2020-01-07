@@ -96,12 +96,6 @@ public class XmlSignController {
         SignState signState = new SignState(parameters, service);
         GlobalVariableService.putStateByUid(xmlSign.getToken(),signState);
 
-        try {
-            FileUtils.writeByteArrayToFile(new File(xmlFile.getFileLocationInServer()+".dig"), dataToSign.getBytes()) ;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         xmlSign.setXmlUnsignedDigest(new String(dataToSign.getBytes(), "UTF-8"));
         //////////////////////////////////////////
         xmlSignRepository.save(xmlSign);
@@ -118,6 +112,7 @@ public class XmlSignController {
         if(xmlSign==null) {
             return null;
         }
+
         xmlSign.setXmlSignedDigest(signed_digest);
         String xmlFileServerLocation = xmlFileRepository.findByFileName(xmlSign.getFileName()).getFileLocationInServer();
         File file = new File(xmlFileServerLocation);
@@ -142,7 +137,6 @@ public class XmlSignController {
         CommonCertificateVerifier commonCertificateVerifier = new CommonCertificateVerifier();
         XAdESService service = signState.xAdESService;
 
-
         //SERVER SIDE.
         // Get the SignedInfo XML segment that need to be signed.
        // ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
@@ -159,14 +153,27 @@ public class XmlSignController {
         // SignatureValue signatureValue = keyStoreService.getSigningToken().sign(dataToSign, digestAlgorithm, privateKey);
         // FileUtils.writeByteArrayToFile(new File("D:\\CA materials\\keystore-demo\\big_inter_signed_real.xml"), signatureValue.getValue()) ;
 
-        //byte[] bytes = signed_digest.getBytes(Charset.forName("UTF-8"));
-        byte[] bytes=  FileUtils.readFileToByteArray(new File("E:\\XML\\keystore-demo\\big_inter_signed.xml")) ;
-        SignatureValue signatureValueNew = new SignatureValue(SignatureAlgorithm.RSA_SHA256, bytes);
 
-        // SERVER SIDE
-        // We invoke the service to sign the document with the signature value obtained in
-        // the previous step.
-        DSSDocument signedDocument = service.signDocument(toSignDocument, parameters, signatureValueNew);
+        SignatureValue signatureValueNew;
+        DSSDocument signedDocument;
+        try {
+            byte[] bytes = signed_digest.getBytes(Charset.forName("UTF-8"));
+            signatureValueNew = new SignatureValue(SignatureAlgorithm.RSA_SHA256, bytes);
+            // SERVER SIDE
+            // We invoke the service to sign the document with the signature value obtained in
+            // the previous step.
+            signedDocument = service.signDocument(toSignDocument, parameters, signatureValueNew);
+        }
+        catch(Exception e) {
+            String fileNameToReadFromServer = "E:\\SiginigTry\\SpringBoot-Init\\upload\\" + xmlSign.getFileName() + ".sig";
+            byte[] bytes=  FileUtils.readFileToByteArray(new File(fileNameToReadFromServer));
+            signatureValueNew = new SignatureValue(SignatureAlgorithm.RSA_SHA256, bytes);
+            // SERVER SIDE
+            // We invoke the service to sign the document with the signature value obtained in
+            // the previous step.
+            signedDocument = service.signDocument(toSignDocument, parameters, signatureValueNew);
+        }
+
         signedDocument.save(xmlFileServerLocation + ".sig");
         ////////////////////////////////////////////////////////////////////
         return xmlSign;
