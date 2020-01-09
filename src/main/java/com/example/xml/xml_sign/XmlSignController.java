@@ -34,8 +34,8 @@ public class XmlSignController {
     //////    1st Rest Call From Client     //////////////////////////////////////////////////////////
     @PostMapping(path = "/add") // Map ONLY POST Requests
     public @ResponseBody
-    XmlSign addNewXmlSign(@RequestParam String file_name
-            ,@RequestParam String certificate_chain) throws CertificateException, UnsupportedEncodingException {
+    XmlSign addNewXmlSign(@RequestParam("file_name") String file_name
+            ,@RequestParam("certificate_chain") String certificate_chain) throws CertificateException, UnsupportedEncodingException {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
         XmlFile xmlFile = xmlFileRepository.findByFileName(file_name);

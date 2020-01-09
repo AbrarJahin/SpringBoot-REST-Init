@@ -30,7 +30,7 @@ public class XmlFileController {
     private XmlFileRepository xmlFileRepository;
 
     @PostMapping(path = "/upload")
-    public @ResponseBody XmlFile addNewUser(@RequestParam("file") MultipartFile file) {
+    public @ResponseBody XmlFile addNewFile(@RequestParam("file") MultipartFile file) {
         XmlFile xmlFile = new XmlFile();
         if (!file.isEmpty()) {
             try {
@@ -53,7 +53,7 @@ public class XmlFileController {
 
     @RequestMapping(value="/download/{file_name}", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseEntity<Resource> download1(@PathVariable("file_name") String file_name) throws IOException {
+    ResponseEntity<Resource> download(@PathVariable("file_name") String file_name) throws IOException {
         XmlFile xmlFile = xmlFileRepository.findByFileName(file_name);
         if(xmlFile == null) {
             return null;
@@ -62,6 +62,52 @@ public class XmlFileController {
 
         HttpHeaders header = new HttpHeaders();
         header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+xmlFile.getOriginalName());
+        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        header.add("Pragma", "no-cache");
+        header.add("Expires", "0");
+
+        Path path = Paths.get(file.getAbsolutePath());
+        ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+        return ResponseEntity.ok()
+                .headers(header)
+                .contentLength(file.length())
+                .contentType(MediaType.valueOf(xmlFile.getFileType()))
+                .body(resource);
+    }
+
+    @PostMapping(path = "/upload_signed")
+    public @ResponseBody XmlFile addSignedFile(@RequestParam("file") MultipartFile file, @RequestParam("file_name") String fileName) {
+        XmlFile xmlFile = xmlFileRepository.findByFileName(fileName);
+        if(xmlFile == null) {
+            return null;
+        }
+        if (!file.isEmpty()) {
+            try {
+                // read and write the file to the selected location-
+                byte[] bytes = file.getBytes();
+                Path path = Paths.get(env.getProperty("file.upload-dir") + xmlFile.randomSalt()+".sig");
+                Files.write(path, bytes);
+                xmlFile.setSignedFileLocationInServer(path.toString());
+            } catch (IOException e) {
+                xmlFile.setSignedFileLocationInServer(null);
+                e.printStackTrace();
+            }
+            xmlFileRepository.save(xmlFile);
+        }
+        return xmlFile;
+    }
+
+    @RequestMapping(value="/download_signed/{file_name}", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseEntity<Resource> downloadSigned(@PathVariable("file_name") String file_name) throws IOException {
+        XmlFile xmlFile = xmlFileRepository.findByFileName(file_name);
+        if(xmlFile.getSignedFileLocationInServer() == null) {
+            return null;
+        }
+        File file = new File(xmlFile.getSignedFileLocationInServer());
+
+        HttpHeaders header = new HttpHeaders();
+        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+xmlFile.getOriginalName()+".signed");
         header.add("Cache-Control", "no-cache, no-store, must-revalidate");
         header.add("Pragma", "no-cache");
         header.add("Expires", "0");

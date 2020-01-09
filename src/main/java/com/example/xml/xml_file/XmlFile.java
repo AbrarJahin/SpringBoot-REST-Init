@@ -6,8 +6,6 @@ import javax.persistence.Entity;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class XmlFile extends BaseEntityAudit {
-
-
     public String getFileName() {
         return fileName;
     }
@@ -55,6 +53,14 @@ public class XmlFile extends BaseEntityAudit {
         return OriginalName;
     }
 
+    public String getSignedFileLocationInServer() {
+        return signedFileLocationInServer;
+    }
+
+    public void setSignedFileLocationInServer(String signedFileLocationInServer) {
+        this.signedFileLocationInServer = signedFileLocationInServer;
+    }
+
     @Column(name="original_name", columnDefinition = "varchar(1000) DEFAULT 'not_set'", insertable=true, updatable = false)
     private String OriginalName;
 
@@ -69,4 +75,7 @@ public class XmlFile extends BaseEntityAudit {
 
     @Column(name="hash_code", columnDefinition = "BIGINT DEFAULT 0", insertable=true, updatable = false)
     private int fileHash;
+
+    @Column(name="signed_physical_file_location", columnDefinition = "varchar(1000) DEFAULT 'not_set'", insertable=true, unique=true)
+    private String signedFileLocationInServer;
 }
