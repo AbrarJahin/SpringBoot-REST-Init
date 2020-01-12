@@ -4,6 +4,8 @@ import com.example.xml.BaseEntityAudit;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+//Sign entity for split mode
+
 @Entity // This tells Hibernate to make a table out of this class
 public class XmlSign extends BaseEntityAudit {
     @Column(unique=true, length=128, updatable = false)
