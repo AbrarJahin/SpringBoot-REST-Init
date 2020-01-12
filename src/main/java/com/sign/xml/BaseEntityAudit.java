@@ -1,4 +1,4 @@
-package com.example.xml;
+package com.sign.xml;
 
 import java.util.Date;
 
@@ -8,7 +8,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.Size;
 
 /**
  * Base Entity Audit

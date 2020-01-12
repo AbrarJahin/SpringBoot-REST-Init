@@ -1,8 +1,8 @@
-package com.example.xml.xml_sign;
+package com.sign.xml.xml_sign;
 
 import com.ex.Util;
-import com.example.xml.xml_file.XmlFile;
-import com.example.xml.xml_file.XmlFileRepository;
+import com.sign.xml.xml_file.XmlFile;
+import com.sign.xml.xml_file.XmlFileRepository;
 import com.service.GlobalVariableService;
 import com.service.SignState;
 import eu.europa.esig.dss.*;

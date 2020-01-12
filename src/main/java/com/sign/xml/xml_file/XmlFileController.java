@@ -1,12 +1,5 @@
-package com.example.xml.xml_file;
+package com.sign.xml.xml_file;
 
-import com.example.xml.xml_sign.XmlSign;
-import com.service.GlobalVariableService;
-import com.service.SignState;
-import eu.europa.esig.dss.*;
-import eu.europa.esig.dss.validation.CommonCertificateVerifier;
-import eu.europa.esig.dss.xades.XAdESSignatureParameters;
-import eu.europa.esig.dss.xades.signature.XAdESService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
@@ -24,8 +17,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.cert.CertificateException;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 

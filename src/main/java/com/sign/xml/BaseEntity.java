@@ -1,4 +1,4 @@
-package com.example.xml;
+package com.sign.xml;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import java.io.Serializable;

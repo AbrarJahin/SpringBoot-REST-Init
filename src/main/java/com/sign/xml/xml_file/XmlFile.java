@@ -1,6 +1,6 @@
-package com.example.xml.xml_file;
+package com.sign.xml.xml_file;
 
-import com.example.xml.BaseEntityAudit;
+import com.sign.xml.BaseEntityAudit;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 

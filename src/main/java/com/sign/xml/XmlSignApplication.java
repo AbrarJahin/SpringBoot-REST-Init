@@ -1,4 +1,4 @@
-package com.example.xml;
+package com.sign.xml;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
